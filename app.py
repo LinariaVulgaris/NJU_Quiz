@@ -103,7 +103,25 @@ if st.session_state.quiz_data:
             for i, item in enumerate(st.session_state.quiz_data):
                 if st.checkbox(f"事迹 {i + 1}: {item['content']}", key=f"check_{i}"):
                     current_selections.append(i)
-
+            
+            st.markdown("""
+            <style>
+            /* 定位表单提交按钮 */
+            div[data-testid="stFormSubmitButton"] > button {
+                background-color: #FF3333 !important;  /* 默认红色 */
+                color: white !important;               /* 文字白色 */
+                border-radius: 10px !important;        /* 圆角 */
+                height: 3em !important;                /* 高度 */
+                transition: 0.3s !important;           /* 过渡效果 */
+            }
+            /* 提交按钮悬浮效果（加深红色） */
+            div[data-testid="stFormSubmitButton"] > button:hover {
+                background-color: #D92D2D !important;  /* 悬浮加深红色 */
+                transform: scale(1.02) !important;     /* 轻微放大 */
+            }
+            </style>
+            """, unsafe_allow_html=True)
+            
             if st.form_submit_button("🔥 提交答案"):
                 if len(current_selections) != 2:
                     st.warning("⚠️ yo~必须且只能选择 2 个你认为是谎言的选项哦！")
