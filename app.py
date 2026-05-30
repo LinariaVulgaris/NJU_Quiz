@@ -3,20 +3,22 @@ import os
 import json
 import re
 import time  # 导入计时模块
+import secrets
 from openai import OpenAI
-from dotenv import load_dotenv
 
 # --- 1. 初始化配置 ---
-load_dotenv()
-client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com")
-
 st.set_page_config(page_title="南大往事：真伪鉴别挑战", layout="centered", page_icon="🏛️")
+
+client = OpenAI(
+    api_key=st.secrets["DEEPSEEK_API_KEY"],
+    base_url="https://api.deepseek.com"
+)
 
 # --- 2. 样式美化 ---
 st.markdown("""
     <style>
     .main-title { text-align: center; color: #1E3A8A; font-family: 'serif'; }
-    div.stButton > button { width: 100%; border-radius: 10px; height: 3em; background-color: #5C9EFF; color: white; transition: 0.3s; }
+    div.stButton > button { width: auto; max-width: 400px; border-radius: 10px; height: 3em; background-color: #5C9EFF; color: white; transition: 0.3s; }
     div.stButton > button:hover { background-color: #4A86E8; transform: scale(1.02); }
     .stExpander { border: 1px solid #E0E0E0; border-radius: 10px; margin-bottom: 10px !important; }
     </style>
@@ -38,7 +40,7 @@ def generate_challenge():
         try:
             # 💡 关键修改：加入 timeout 参数，设置 15 秒超时
             response = client.chat.completions.create(
-                model="deepseek-ai/DeepSeek-V4-Flash",  # 如果还慢，换成 "deepseek-ai/DeepSeek-V3"
+                model="deepseek-v4-flash",  
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,
                 timeout=15.0  # 超过 15 秒没反应直接跳到 except
@@ -50,13 +52,14 @@ def generate_challenge():
             json_str = re.search(r'\{.*\}', raw_content, re.DOTALL).group(0)
             data = json.loads(json_str)["data"]
 
-            print(f"⚡ 性能监控 | 第 {i + 1} 次尝试成功 | API 耗时: {api_duration:.2f} 秒")
+            st.log(f"⚡ 性能监控 | 第 {i + 1} 次尝试成功 | API 耗时: {api_duration:.2f} 秒")
+
             return data
 
         except Exception as e:
-            print(f"⚠️ 第 {i + 1} 次尝试失败或超时: {e}")
+            st.log(f"⚠️ 第 {i + 1} 次尝试失败或超时: {str(e)}")
             if i < max_retries - 1:
-                print("🔄 正在尝试重新连接...")
+                st.log("🔄 正在尝试重新连接...")
                 time.sleep(1)  # 等 1 秒再试
             else:
                 st.error("🚨 API 响应太慢或网络拥堵，请稍后再试。")
@@ -65,7 +68,7 @@ def generate_challenge():
 
 # --- 4. 主界面 ---
 st.markdown("<h1 class='main-title'>🏛️ 南大往事：真伪鉴别挑战</h1>", unsafe_allow_html=True)
-st.write("南京大学历史悠久，吴健雄先生巾帼不让须眉。在下面 5 条中，藏着 **2 条 AI 编造的谎言**，你能识破吗？")
+st.write("在下面 5 条表述中，藏着 **2 条 AI 编造的谎言**，你能识破吗？")
 
 if 'quiz_data' not in st.session_state:
     st.session_state.quiz_data = None
@@ -74,8 +77,7 @@ if 'submitted' not in st.session_state:
 
 # 生成/重置按钮
 if st.button("✨ 生成新挑战 / 刷新题目"):
-    # 趣味加载文案，缓解等待焦虑
-    loading_texts = ["正在查阅档案馆资料...", "正在向吴健雄实验室发报...", "正在编造足以乱真的谎言..."]
+    loading_texts = ["正在查阅档案馆资料...", "正在编造足以乱真的谎言..."]
     import random
 
     with st.spinner(f"🚀 {random.choice(loading_texts)}"):
@@ -128,7 +130,7 @@ if st.session_state.quiz_data:
         if set(user_choice) == set(correct_indices):
             import os  # 确保导入os用于生成凭证
 
-            st.markdown(f"### 🏆 领奖凭证: `{os.urandom(4).hex().upper()}`")
+            st.markdown(f"### 🏆 领奖凭证: `{secrets.token_hex(4).upper()}`")
 
         st.divider()
         st.subheader("📜 真相揭晓与深度解析")
@@ -146,14 +148,22 @@ else:
 
 # --- 6. 侧边栏 ---
 with st.sidebar:
+    st.markdown(
+        f"""<div style="text-align: center; margin-bottom: 30px;">
+            <img src="https://www.nju.edu.cn/images/logo.png" width="225" style="filter: brightness(0) saturate(100%) invert(23%) sepia(68%) saturate(1200%) hue-rotate(255deg) brightness(85%) contrast(95%);">
+            </div>""", unsafe_allow_html=True)
     st.header("🎮 游戏规则")
     st.write("1. 题目由 Deepseek-V4-Flash 生成")
-    st.write("2. 5 条事迹中只有 2 条是假的。")
-    st.write("3. 全部找对即可获得领奖凭证。")
+    st.write("2. 5 条事迹中只有 2 条是假的")
+    st.write("3. 全部找对即可获得领奖凭证")
     st.divider()
     st.markdown(
         f"""<div style="text-align: center;">
-        <img src="https://i.stardots.io/168423434010/StarDots_2026-02-11T16_07_21.6300Z_1499.png" width="150">
+        <img src="https://i.stardots.io/168423434010/StarDots_2026-02-11T16_07_21.6300Z_1499.png" width="100">
         <p style="margin-top: 10px; font-weight: bold; color: #5C9EFF;">本站由 柳穿鱼 创建</p>
         <p style="font-size: 0.8em; color: gray;">© 2026 NJU 星光集市</p>
         </div>""", unsafe_allow_html=True)
+
+# --- 7. 底部提示（新增） ---
+st.divider()
+st.caption("⚠️ 内容由AI生成，请仔细甄别~")
