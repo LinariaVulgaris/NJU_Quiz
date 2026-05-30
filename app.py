@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 
 # --- 1. 初始化配置 ---
 load_dotenv()
-client = OpenAI(api_key=os.getenv("SILICONFLOW_API_KEY"), base_url="https://api.siliconflow.cn/v1")
+client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com")
 
 st.set_page_config(page_title="南大往事：真伪鉴别挑战", layout="centered", page_icon="🏛️")
 
