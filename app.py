@@ -52,14 +52,14 @@ def generate_challenge():
             json_str = re.search(r'\{.*\}', raw_content, re.DOTALL).group(0)
             data = json.loads(json_str)["data"]
 
-            st.log(f"⚡ 性能监控 | 第 {i + 1} 次尝试成功 | API 耗时: {api_duration:.2f} 秒")
+            print(f"⚡ 性能监控 | 第 {i + 1} 次尝试成功 | API 耗时: {api_duration:.2f} 秒")
 
             return data
 
         except Exception as e:
-            st.log(f"⚠️ 第 {i + 1} 次尝试失败或超时: {str(e)}")
+            print(f"⚠️ 第 {i + 1} 次尝试失败或超时: {str(e)}")
             if i < max_retries - 1:
-                st.log("🔄 正在尝试重新连接...")
+                print("🔄 正在尝试重新连接...")
                 time.sleep(1)  # 等 1 秒再试
             else:
                 st.error("🚨 API 响应太慢或网络拥堵，请稍后再试。")
