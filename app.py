@@ -108,7 +108,7 @@ if st.session_state.quiz_data:
             <style>
             /* 定位表单提交按钮 */
             div[data-testid="stFormSubmitButton"] > button {
-                background-color: #FF4500 !important;  /* 默认红色 */
+                background-color: #FF7F50 !important;  /* 默认红色 */
                 color: white !important;               /* 文字白色 */
                 border-radius: 10px !important;        /* 圆角 */
                 height: 3em !important;                /* 高度 */
