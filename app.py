@@ -32,7 +32,7 @@ def generate_challenge():
     prompt = """
     你是南京大学校史与吴健雄研究专家。请生成5条关于“南京大学校史”或“吴健雄”的短事迹，每条30到50字左右，并严格满足以下要求：
     1. 其中**正好3条完全真实、2条完全虚构**，虚构的必须乍看合理但经不起严格考证。
-    2. 真事迹应选取鲜为人知但确切的细节（如具体年份、地点、实验名称、学脉关联等），假事迹要巧妙扭曲真实细节（如改关键人物、机构、事件因果等）。
+    2. 真事迹应选取鲜为人知但确切的细节，假事迹要巧妙扭曲真实细节（如改关键人物、机构、事件因果等）。
     3. 虚构条目必须能被了解过南大历史和吴健雄事迹的人一眼识破，但外行不易分辨。
     4. 严禁生成任何解释、开场白或结束语，**只输出一个严格符合JSON格式的对象**，格式如下：
     {"data": [{"content": "事迹文本", "is_real": true/false, "explanation": "对假事迹指出错误并纠正，对真事迹简要注明出处依据或补充背景信息"}]}
@@ -108,7 +108,7 @@ if st.session_state.quiz_data:
             <style>
             /* 定位表单提交按钮 */
             div[data-testid="stFormSubmitButton"] > button {
-                background-color: #FF3333 !important;  /* 默认红色 */
+                background-color: #FF4500 !important;  /* 默认红色 */
                 color: white !important;               /* 文字白色 */
                 border-radius: 10px !important;        /* 圆角 */
                 height: 3em !important;                /* 高度 */
